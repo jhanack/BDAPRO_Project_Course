@@ -1,0 +1,41 @@
+Shell commands to check DB data insertion
+
+Postgres:
+psql -U bdapro_user bdapro_database
+\l
+\d bdapro_schema
+table bdapro_schema;
+
+Exasol:
+docker port exa-1
+docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' exa-1
+docker run --cpuset-cpus="1,2" --memory=4g --memory-swap=4g --memory-reservation=4g exasol/docker-db:
+172.19.0.2:8563
+exaplus -c n11:8563 -u sys -P exasol -jdbcparam validateservercertificate=0
+exaplus -c n11:8888 -u sys -P exasol -jdbcparam validateservercertificate=0
+
+/usr/opt/EXASuite-7/EXASolution-7.1.4/bin/Console/exaplus -c 172.21.0.2:8574:8563 -u sys -p exasol -jdbcparam validateservercertificate=0
+127.0.0.1:8899:8888
+172.21.0.2
+172.19.0.2
+8574
+2580:2591
+8563:8574
+ # Ports to be exposed (container : host)
+    ExposedPorts = 8563:8574, 2580:2591
+
+
+MariaDB:
+mysql -u bdapro_user -pbdapro_password bdapro_database
+# -h 166.78.144.191
+SHOW TABLES;
+SELECT * FROM bdapro_schema;
+
+
+
+Notes
+
+HOSPITAL, DATE, BED_TYPE, STATUS, COUNT
+Hospital, Date, Bed_Type, Status, Count
+system mysql -u root -psecret
+

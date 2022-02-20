@@ -1,0 +1,80 @@
+version: "3.7"
+
+services:
+  postgres-1:
+    container_name: pg-1
+    build: ./postgres
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d bdapro_database
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - ./setupPostgresql1.sql:/docker-entrypoint-initdb.d/setupMariaDB1.sql:rw
+    ports:
+      - 8080:5432
+
+  postgres-2:
+    container_name: pg-2
+    build: ./postgres
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d bdapro_database
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - ./setupPostgresql2.sql:/docker-entrypoint-initdb.d/setupMariaDB2.sql:rw
+    ports:
+      - 8081:5432
+
+
+
+#  exasol:
+#    container_name: exa-1
+#    image: exasol/docker-db:latest
+#    privileged: true
+#    #    volumes:
+#    #      - ./COVID-19_Hospital_Capacity.csv:/var/lib/postgresql/csv_folder/COVID-19_Hospital_Capacity.csv:rw
+#    #      - ./Postgres_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/Postgres_COVID-19_Hospital_Capacity.sql:rw
+#    ports:
+#      - 8080:8563
+#    #      - 8563:8574
+#    #      - 2580:2591
+#    #      - 8899:8888
+#    #      - 8081:80
+#    #      - 6932:6932
+#    #      - 2580:2580
+#    #      - 9563:8563
+#    #      - 8899:8888
+#    #      - 2580:2580
+#    #      - 8080:8080
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: '1'
+#          memory: 2g
+#        reservations:
+#          cpus: '1'
+#          memory: 1g
+
+#volumes:
+#  volume-csv:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./COVID-19_Hospital_Capacity.csv
+#  volume-sql:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./Postgres_COVID-19_Hospital_Capacity.sql

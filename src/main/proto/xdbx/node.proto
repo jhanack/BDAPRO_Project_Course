@@ -1,0 +1,98 @@
+syntax = "proto3";
+option java_package = "de.tuberlin.dima.xdbx.proto";
+option java_multiple_files = true;
+
+message XDBConnection {
+  string address = 1;
+  uint32 port = 2;
+  NodeCredentials credentials = 3;
+}
+
+message NodeCredentials {
+  string user = 1;
+  string authentication = 2;
+}
+
+message DBCredentials {
+  string user = 1;
+  string authentication = 2;
+}
+message DBAddress {
+  string address = 1;
+  uint32 port = 2;
+}
+
+message DBConnection {
+  DBAddress dbAddress = 1;
+  string db = 2;
+  DBCredentials credentials = 3;
+}
+
+message ForeignTableRequest {
+  string localName = 1;
+  string foreignName = 2;
+  XDBConnection xdbconn = 3;
+  DBConnection dbconn = 4;
+  DBConnection foreignDBConn = 5;
+  NodeCredentials credential = 6;
+}
+
+message CreateViewRequest {
+  string localName = 1;
+  string query = 2;
+  DBConnection dbConn = 3;
+  NodeCredentials credentials = 4;
+}
+
+message GetColumnInfoRequest {
+  string assignedName = 1;
+  DBConnection dbConn = 2;
+  NodeCredentials credentials = 3;
+}
+
+message ColumnInfo {
+  string name = 1;
+  string type = 2;
+  uint32 columnWidth = 3;
+  StandardResponse responseCode = 4;
+}
+
+message TranslateRequest {
+  string requestedName = 1;
+  NodeCredentials credentials = 2;
+}
+
+message DBTypeRequest {
+  DBAddress dbAddress = 1;
+  NodeCredentials credentials = 2;
+}
+
+
+message StandardResponse {
+  //SuccessCode meanings:
+  //0: requested operation successfully finished
+  //1: Authentication failed/User not found
+  //2: For TranslateRequest: Name was never requested, i.e. no assigned name exists
+  //2: For getDBTypeRequest: Database is unknown
+  //3: SQLException was thrown
+  int32 successCode = 1;
+}
+
+message TranslateResponse {
+  StandardResponse responseCode = 1;
+  string assignedName = 2;
+}
+
+message DBTypeResponse {
+  StandardResponse responseCode = 1;
+  string dbtype = 2;
+}
+
+
+service Node {
+  rpc createForeignTable(ForeignTableRequest) returns (StandardResponse) {}
+  rpc createView(CreateViewRequest) returns (StandardResponse) {}
+  rpc translate(TranslateRequest) returns (TranslateResponse) {}
+  rpc getColumnInfoRequest(GetColumnInfoRequest) returns (stream ColumnInfo) {}
+  rpc getDBType(DBTypeRequest) returns (DBTypeResponse) {}
+}

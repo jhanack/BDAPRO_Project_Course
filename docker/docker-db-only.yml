@@ -1,0 +1,135 @@
+version: "3.7"
+
+services:
+
+  postgres-1:
+    image: postgresdb
+    container_name: pg-1
+    restart: always
+    volumes:
+      - test-data:/data
+      - "test-data.csv:/var/lib/postgresql/data/pgdata"
+    ports:
+      - 15432:5432
+
+  postgres-2:
+    image: postgresdb
+    container_name: pg-2
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume2:/var/lib/postgresql/
+    ports:
+      - 25432:5432
+
+  postgres-3:
+    image: postgresdb
+    container_name: pg-3
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume3:/var/lib/postgresql/
+    ports:
+      - 35432:5432
+
+  postgres-4:
+    image: postgresdb
+    container_name: pg-4
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume4:/var/lib/postgresql/
+    ports:
+      - 45432:5432
+
+  postgres-5:
+    image: postgresdb
+    container_name: pg-5
+    restart: always
+    volumes:
+      - test-data:/data
+      - pgvolume5:/var/lib/postgresql/
+    ports:
+      - 55432:5432
+
+  mariadb:
+    image: mymaria
+    container_name: mdb1
+    restart: always
+    volumes:
+      - test-data:/data
+      - mvolume:/var/lib/mysql
+    ports:
+      - 13306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=mdb
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
+
+  mariadb-2:
+    image: mymaria
+    container_name: mdb2
+    restart: always
+    volumes:
+      - test-data:/data
+      - mvolume2:/var/lib/mysql
+    ports:
+      - 23306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=mdb
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
+
+  mariadb-3:
+    image: mymaria
+    container_name: mdb3
+    restart: always
+    volumes:
+      - test-data:/data
+      - mvolume3:/var/lib/mysql
+    ports:
+      - 33306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=mdb
+      - MYSQL_USER=mariadb
+      - MYSQL_PASSWORD=123456
+
+  polydb:
+    image: polydb/polydb
+    container_name: polydb
+    restart: always
+    tty: true
+
+  exasol:
+    image: exasol/docker-db:latest
+    container_name: exa1
+    ports:
+      - 9563:8563
+      - 8899:8888
+      - 8081:80
+      - 6932:6932
+      - 2580:2580
+    privileged: true
+    volumes:
+      - test-data:/data
+
+
+volumes:
+  test-data:
+    external: true
+  pgvolume1:
+  pgvolume2:
+  pgvolume3:
+  pgvolume4:
+  pgvolume5:
+  mvolume:
+  mvolume2:
+  mvolume3:
+
+
+networks:
+  default:
+    name: polydb-net

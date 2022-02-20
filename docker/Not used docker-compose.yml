@@ -1,0 +1,234 @@
+version: "3.7"
+
+services:
+  namenode:
+    image: polydb/hadoop-namenode
+    container_name: namenode
+    restart: always
+    volumes:
+      - test-data:/data
+    ports:
+      - 50070:50070
+      - 9000:9000
+    environment:
+      - CLUSTER_NAME=polydb
+    env_file:
+      - hadoop/hadoop.env
+
+  datanode-1:
+    image: polydb/hadoop-datanode
+    container_name: datanode-1
+    restart: always
+    ports:
+      - 51075:50075
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070
+    env_file:
+      - hadoop/hadoop.env
+
+  datanode-2:
+    image: polydb/hadoop-datanode
+    container_name: datanode-2
+    restart: always
+    ports:
+      - 52075:50075
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070
+    env_file:
+      - hadoop/hadoop.env
+  
+  resourcemanager:
+    image: polydb/hadoop-resourcemanager
+    container_name: resourcemanager
+    restart: always
+    ports:
+      - 8088:8088
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075
+    env_file:
+      - hadoop/hadoop.env
+
+  nodemanager:
+    image: polydb/hadoop-nodemanager
+    container_name: nodemanager
+    restart: always
+    ports:
+      - 8042:8042
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075 resourcemanager:8088
+    env_file:
+      - hadoop/hadoop.env
+  
+  timelineserver:
+    image: polydb/hadoop-timelineserver
+    container_name: timelineserver
+    restart: always
+    ports:
+      - 8188:8188
+    environment:
+      - SERVICE_PRECONDITION=namenode:9000 namenode:50070 datanode-1:50075 datanode-2:50075 resourcemanager:8088
+    env_file:
+      - hadoop/hadoop.env
+
+  zoo:
+    image: zookeeper
+    container_name: zoo
+    restart: always
+    ports:
+      - 2181:2181
+      - 18080:8080
+    environment:
+      - ZOO_MY_ID=1
+      - ZOO_SERVERS=server.1=0.0.0.0:2888:3888;2181
+
+  hbase-master:
+    image: polydb/hbase-master
+    container_name: hbase-master
+    restart: always
+    volumes:
+      - test-data:/data
+    ports:
+      - 16010:16010
+      - 16000:16000
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181
+    env_file:
+      - hbase/hbase.env
+
+  regionserver-1:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-1
+    restart: always
+    ports:
+      - 16030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-1
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181 hbase-master:16010
+    env_file:
+      - hbase/hbase.env
+
+  regionserver-2:
+    image: polydb/hbase-regionserver
+    container_name: regionserver-2
+    restart: always
+    ports:
+      - 26030:16030
+    environment:
+      - HBASE_CONF_hbase_regionserver_hostname=regionserver-2
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 zoo:2181 hbase-master:16010
+    env_file:
+      - hbase/hbase.env
+
+  hive-server:
+    image: polydb/hive
+    container_name: hive-server
+    restart: always
+    ports:
+      - 10000:10000
+    environment:
+      # Why do we need this overwrite?
+      - HIVE_CORE_CONF_javax_jdo_option_ConnectionURL=jdbc:postgresql://hive-metastore/metastore
+      - SERVICE_PRECONDITION=hive-metastore:9083
+    env_file:
+      - hadoop/hadoop.env
+      - hive/hive.env
+    command: /run-server.sh
+  
+  hive-metastore:
+    image: polydb/hive
+    container_name: hive-metastore
+    restart: always
+    ports:
+      - 9083:9083
+    environment:
+      - SERVICE_PRECONDITION=namenode:50070 datanode-1:50075 datanode-2:50075 postgres-metastore:5432
+    env_file:
+      - hadoop/hadoop.env
+      - hive/hive.env
+    command: /run-metastore.sh
+
+  postgres-metastore:
+    image: postgres
+    container_name: postgres-metastore
+    restart: always
+    ports:
+      - 25432:5432
+    environment:
+      # These values have to match the HIVE_SITE_CONF_javax_jdo_option_* values in hive.env
+      - POSTGRES_DB=metastore
+      - POSTGRES_USER=hive
+      - POSTGRES_PASSWORD=hivePW123
+
+  postgres:
+    image: postgres
+    container_name: postgres-db
+    restart: always
+    ports:
+      - 15432:5432
+    environment:
+      - POSTGRES_DB=polydb
+      - POSTGRES_USER=polydb
+      - POSTGRES_PASSWORD=polydbPW123
+
+  spark-master:
+    image: polydb/spark-master
+    container_name: spark-master
+    restart: always
+    ports:
+      - 8080:8080
+      - 7077:7077
+    env_file:
+      - spark/spark.env
+
+  spark-worker-1:
+    image: polydb/spark-worker
+    container_name: spark-worker-1
+    restart: always
+    ports:
+      - 18081:8081
+    environment:
+      - SERVICE_PRECONDITION=spark-master:7077
+    env_file:
+      - spark/spark.env
+
+  spark-worker-2:
+    image: polydb/spark-worker
+    container_name: spark-worker-2
+    restart: always
+    ports:
+      - 28081:8081
+    environment:
+      - SERVICE_PRECONDITION=spark-master:7077
+    env_file:
+      - spark/spark.env
+
+  polydb:
+    image: polydb/polydb
+    container_name: polydb
+    restart: always
+    tty: true
+
+  #redis:
+  #  image: redis
+  #  container_name: redis
+  #  restart: always
+  #  ports:
+  #    - 6379:6379
+    # TODO: Protect Redis with password
+
+  #meta-repo:
+  #  image: polydb/meta-repo
+  #  container_name: meta-repo
+  #  restart: always
+  #  ports:
+  #    - 8181:8181
+  #  environment:
+  #    - SERVICE_PRECONDITION=namenode:50070 zoo:2181 hbase-master:16010 postgres-metastore:5432 postgres:5432 redis:6379
+
+volumes:
+  test-data:
+    external: true
+
+networks:
+  default:
+    name: polydb-net
