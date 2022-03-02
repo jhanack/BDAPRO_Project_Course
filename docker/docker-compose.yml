@@ -1,60 +1,66 @@
 version: "3.7"
 
 services:
-
   postgres-1:
+    image: postgres-setup
     container_name: pg-1
-    image: postgres:13.5
     environment:
       POSTGRES_DB: bdapro_database
       POSTGRES_USER: bdapro_user
-      POSTGRES_PASSWORD: bdapro_pwd
+      POSTGRES_PASSWORD: bdapro_password
     restart: always
     healthcheck:
-      test: pg_isready -U bdapro_user -d bdapro_pwd
+      test: pg_isready -U bdapro_user -d bdapro_database
       interval: 10s
       timeout: 3s
       retries: 3
     volumes:
-      - ./COVID-19_Hospital_Capacity.csv:/var/lib/postgresql/csv_folder/COVID-19_Hospital_Capacity.csv:rw
-      - ./Postgres_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/Postgres_COVID-19_Hospital_Capacity.sql:rw
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
     ports:
       - 8080:5432
 
   postgres-2:
     container_name: pg-2
-    image: postgres:13.5
+    image: postgres-setup
     environment:
       POSTGRES_DB: bdapro_database
       POSTGRES_USER: bdapro_user
-      POSTGRES_PASSWORD: bdapro_pwd
+      POSTGRES_PASSWORD: bdapro_password
     restart: always
     healthcheck:
-      test: pg_isready -U bdapro_user -d bdapro_pwd
+      test: pg_isready -U bdapro_user -d database
       interval: 10s
       timeout: 3s
       retries: 3
     volumes:
-      - ./COVID-19_Hospital_Capacity.csv:/var/lib/postgresql/csv_folder/COVID-19_Hospital_Capacity.csv:rw
-      - ./Postgres_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/Postgres_COVID-19_Hospital_Capacity.sql:rw
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
     ports:
       - 8081:5432
 
-
-  maria-db-1:
-    container_name: mdb-1
-    image: mariadb:10.6
-    restart: always
+  postgres-3:
+    container_name: pg-3
+    image: postgres-setup
     environment:
-      MARIADB_DATABASE: bdapro_database
-      MARIADB_USER: bdapro_user
-      MARIADB_PASSWORD: bdapro_password
-      MARIADB_ROOT_PASSWORD: secret
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d database
+      interval: 10s
+      timeout: 3s
+      retries: 3
     volumes:
-      - ./COVID-19_Hospital_Capacity.csv:/docker-entrypoint-initdb.d/COVID-19_Hospital_Capacity.csv:rw
-      - ./MariaDB_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/MariaDB_COVID-19_Hospital_Capacity.sql:rw
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
+    ports:
+      - 8082:5432
 
-
+volumes:
+  test-data:
+    external: true
 
 
 
