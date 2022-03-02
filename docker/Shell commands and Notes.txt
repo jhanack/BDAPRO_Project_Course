@@ -3,8 +3,10 @@ Shell commands to check DB data insertion
 Postgres:
 psql -U bdapro_user bdapro_database
 \l
-\d bdapro_schema
-table bdapro_schema;
+\c bdapro_database
+\d sf1_part
+SELECT * FROM sf1_customer;
+
 
 Exasol:
 docker port exa-1
