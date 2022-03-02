@@ -9,6 +9,8 @@ object ReadMultiple {
 
   def main(args: Array[String]): Unit = {
 
+    val t1 = System.nanoTime
+
     val spark = SparkSession
       .builder
       .config("spark.jars", "src/main/JDBC_Driver/postgresql-42.3.2.jar")
@@ -64,14 +66,22 @@ object ReadMultiple {
       })
 
 
-      //here we have now all our tables loaded, hence we can load our query (e.g., q3.sql)
+      //here we have now all our tables loaded, hence we can load our query (e.g., q3_sf1.sql)
       // of course you can expect query, table distribution (td) and pg properties, outputpath as input params (args)
 
-      val sqlQuery = scala.io.Source.fromFile(s"src/main/resources/q3.sql").getLines().mkString
+      val sqlQuery = scala.io.Source.fromFile(s"src/main/resources/q3_sf1.sql").mkString
+      //  .getLines()
+
+      val t2 = System.nanoTime
 
       val d = spark.sql(sqlQuery)
 
-      val outputPath = "/tmp/test.csv"
+      val outputPath = "src/main/resources/query_results/result.csv"
+
+      val duration = (System.nanoTime - t1) / 1e9d
+      val duration2 = (System.nanoTime - t2) / 1e9d
+      println(duration)
+      println(duration2)
 
       d.write
         .mode(SaveMode.Overwrite)
@@ -80,6 +90,8 @@ object ReadMultiple {
         .save(outputPath)
       spark.stop()
 
+      val duration3 = (System.nanoTime - t1) / 1e9d
+      println(duration3)
     }
 
   }
