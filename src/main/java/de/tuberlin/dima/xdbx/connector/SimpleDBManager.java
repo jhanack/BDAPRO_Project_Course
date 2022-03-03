@@ -110,6 +110,7 @@ public class SimpleDBManager implements DBManager {
                 String newHost = address.split(":")[0];
                 int newPort = Integer.parseInt(address.split(":")[1]);
                 DBConnectionDetails newConnectionDetails = connectionDetailFactory.changeHostConnectionDetails(dbConnectionDetails, newHost, newPort);
+                System.out.println(newPort);
                 connector = factories
                         .get(dbTypes.get(address))
                         .createConnection(newConnectionDetails, this::deregisterConnector);
