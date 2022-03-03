@@ -1,8 +1,8 @@
 /*
 --------------------------------------------------
 | pg-1   | lineitem, orders                   |
-| mdb-1  | customer, nation, region, supplier |
-| pg-2   | part, partsupp                     |
+| pg-2   | customer, nation, region, supplier |
+| pg-3   | part, partsupp                     |
 --------------------------------------------------
  */
 
