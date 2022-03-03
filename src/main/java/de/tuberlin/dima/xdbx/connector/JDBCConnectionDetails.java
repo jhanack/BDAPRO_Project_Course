@@ -11,7 +11,7 @@ public class JDBCConnectionDetails implements DBConnectionDetails{
 
 
     public JDBCConnectionDetails(String address, int port, String username, String password, String database) {
-        this.address =  address;
+        this.address = address;
         this.port = port;
         this.username = username;
         this.password = password;
