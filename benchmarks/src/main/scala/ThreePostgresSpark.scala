@@ -5,7 +5,7 @@ import scala.collection.mutable.ListBuffer
 import scala.io.Source
 import scala.collection.JavaConverters._
 
-object ReadMultiple {
+object ThreePostgresSpark {
 
   def main(args: Array[String]): Unit = {
 
@@ -24,7 +24,9 @@ object ReadMultiple {
     import java.util.Properties
 
     var properties: Properties = null
-    val url = getClass.getResource("/td.properties")
+
+    // CHANGE TABLE DISTRIBUTION HERE
+    val url = getClass.getResource("/td1.properties")
     if (url != null) {
       val source = Source.fromURL(url)
 
@@ -69,14 +71,15 @@ object ReadMultiple {
       //here we have now all our tables loaded, hence we can load our query (e.g., q3_sf1.sql)
       // of course you can expect query, table distribution (td) and pg properties, outputpath as input params (args)
 
-      val sqlQuery = scala.io.Source.fromFile(s"src/main/resources/q3_sf1.sql").mkString
+      // CHANGE QUERY AND SCALE FACTOR HERE
+      val sqlQuery = scala.io.Source.fromFile(s"src/main/resources/queries/q3_sf1.sql").mkString
       //  .getLines()
 
       val t2 = System.nanoTime
 
       val d = spark.sql(sqlQuery)
 
-      val outputPath = "src/main/resources/query_results/result.csv"
+      val outputPath = "src/main/resources/query_results/"
 
       val duration = (System.nanoTime - t1) / 1e9d
       val duration2 = (System.nanoTime - t2) / 1e9d

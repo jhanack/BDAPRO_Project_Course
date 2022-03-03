@@ -4,6 +4,12 @@ services:
 
   presto:
     container_name: presto_container
-    image: presto_presto
+    image: presto
     ports:
-      - 8080:8080
+      - 8083:8083
+    networks:
+      - docker_bdapro_network
+
+networks:
+  docker_bdapro_network:
+    external: true
