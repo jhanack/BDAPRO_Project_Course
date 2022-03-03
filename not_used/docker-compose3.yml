@@ -1,0 +1,130 @@
+version: "3.7"
+
+services:
+
+  postgres-1:
+    container_name: pg-1
+    image: postgres:13.5
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_pwd
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d bdapro_pwd
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
+      - test-data:/data
+    ports:
+      - 8080:5432
+
+  postgres-2:
+    container_name: pg-2
+    image: postgres:13.5
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_pwd
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d bdapro_pwd
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - ./COVID-19_Hospital_Capacity.csv:/var/lib/postgresql/csv_folder/COVID-19_Hospital_Capacity.csv:rw
+      - ./Postgres_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/Postgres_COVID-19_Hospital_Capacity.sql:rw
+    ports:
+      - 8081:5432
+
+  maria-db-1:
+    container_name: mdb-1
+    image: mariadb:10.6
+    restart: always
+    environment:
+      MARIADB_DATABASE: bdapro_database
+      MARIADB_USER: bdapro_user
+      MARIADB_PASSWORD: bdapro_password
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - ./COVID-19_Hospital_Capacity.csv:/docker-entrypoint-initdb.d/COVID-19_Hospital_Capacity.csv:rw
+      - ./MariaDB_COVID-19_Hospital_Capacity.sql:/docker-entrypoint-initdb.d/MariaDB_COVID-19_Hospital_Capacity.sql:rw
+
+volumes:
+  test-data:
+    external: true
+
+  
+  RUN curl -s "https://get.sdkman.io" | bash
+  RUN source "$HOME/.sdkman/bin/sdkman-init.sh" | bash
+  RUN sdk install java | bash
+
+  client1.createView("tpchq3",
+  "SELECT\n" +
+  "        l_orderkey,\n" +
+  "        sum(l_extendedprice * (1 - l_discount)) as revenue,\n" +
+  "        o_orderdate,\n" +
+  "        o_shippriority\n" +
+  "    FROM\n" +
+  "        customer_localview,\n" +
+  "        sf1_orders,\n" +
+  "        sf1_lineitem\n" +
+  "    WHERE\n" +
+  "        c_custkey = o_custkey\n" +
+  "        AND l_orderkey = o_orderkey\n" +
+  "        AND o_orderdate < date '1995-03-15'\n" +
+  "        AND l_shipdate > date '1995-03-15'\n" +
+  "    GROUP BY\n" +
+  "        l_orderkey,\n" +
+  "        o_orderdate,\n" +
+  "        o_shippriority\n" +
+  "    ORDER BY\n" +
+  "        revenue desc,\n" +
+  "        o_orderdate\n" +
+  "    LIMIT 10;"
+  ,instance1.getDbConnectionDetails());
+  
+  CREATE VIEW tpchqq AS
+  "SELECT " +
+  "        l_orderkey, " +
+  "        sum(l_extendedprice * (1 - l_discount)) as revenue, " +
+  "        o_orderdate, " +
+  "        o_shippriority " +
+  "    FROM " +
+  "        1_customer_localview, " +
+  "        sf1_orders, " +
+  "        sf1_lineitem " +
+  "    WHERE " +
+  "        c_custkey = o_custkey " +
+  "        AND l_orderkey = o_orderkey " +
+  "        AND o_orderdate < date '1995-03-15' " +
+  "        AND l_shipdate > date '1995-03-15' " +
+  "    GROUP BY " +
+  "        l_orderkey, " +
+  "        o_orderdate, " +
+  "        o_shippriority " +
+  "    ORDER BY " +
+  "        revenue desc, " +
+  "        o_orderdate " +
+  "    LIMIT 10;"
+
+CREATE VIEW jetzt AS SELECT l_orderkey, sum(l_extendedprice * (1 - l_discount)) AS revenue, o_orderdate, o_shippriority FROM "1_customer_localview", sf1_orders, sf1_lineitem WHERE c_custkey = o_custkey AND l_orderkey = o_orderkey AND o_orderdate < date '1995-03-15' AND l_shipdate > date '1995-03-15' GROUP BY l_orderkey, o_orderdate, o_shippriority ORDER BY revenue desc, o_orderdate LIMIT 10;
+
+#volumes:
+#  volume-csv:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./COVID-19_Hospital_Capacity.csv
+#  volume-sql:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./Postgres_COVID-19_Hospital_Capacity.sql
+  
+  curl \
+  unzip \
+  zip \
