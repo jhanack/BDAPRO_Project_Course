@@ -19,6 +19,8 @@ services:
       - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
     ports:
       - 8080:5432
+    networks:
+      - bdapro_network
 
   postgres-2:
     container_name: pg-2
@@ -38,6 +40,8 @@ services:
       - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
     ports:
       - 8081:5432
+    networks:
+      - bdapro_network
 
   postgres-3:
     container_name: pg-3
@@ -57,12 +61,34 @@ services:
       - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
     ports:
       - 8082:5432
+    networks:
+      - bdapro_network
+
+  maria-db-1:
+    container_name: mdb-1
+    #image: mariadb:10.6
+    image: mariadb-setup
+    restart: always
+    environment:
+      MARIADB_DATABASE: bdapro_database
+      MARIADB_USER: bdapro_user
+      MARIADB_PASSWORD: bdapro_password
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - test-data:/docker-entrypoint-initdb.d/tpch:rw
+      - ./mdb_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/mdb_create_tpch_sf1.sql:rw
+    ports:
+      - 8083:3306
+    networks:
+      - bdapro_network
 
 volumes:
   test-data:
     external: true
 
-
+networks:
+  bdapro_network:
+    driver: bridge
 
 
 

@@ -19,23 +19,7 @@ services:
     ports:
       - 8080:5432
 
-  postgres-2:
-    container_name: pg-2
-    build: ./postgres
-    environment:
-      POSTGRES_DB: bdapro_database
-      POSTGRES_USER: bdapro_user
-      POSTGRES_PASSWORD: bdapro_password
-    restart: always
-    healthcheck:
-      test: pg_isready -U bdapro_user -d bdapro_database
-      interval: 10s
-      timeout: 3s
-      retries: 3
-    volumes:
-      - ./setupPostgresql2.sql:/docker-entrypoint-initdb.d/setupMariaDB2.sql:rw
-    ports:
-      - 8081:5432
+
 
 
 
