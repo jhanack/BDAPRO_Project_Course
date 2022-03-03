@@ -1,8 +1,6 @@
 package de.tuberlin.dima.xdbx.tests;
 
 
-import com.palantir.docker.compose.DockerComposeExtension;
-import com.palantir.docker.compose.configuration.ShutdownStrategy;
 import de.tuberlin.dima.xdbx.client.Client;
 import de.tuberlin.dima.xdbx.client.ClientFactory;
 import de.tuberlin.dima.xdbx.client.SimpleClientFactory;
@@ -13,20 +11,17 @@ import de.tuberlin.dima.xdbx.node.SimpleXDBConnection;
 import de.tuberlin.dima.xdbx.node.XDBConnectionDetails;
 import de.tuberlin.dima.xdbx.user.SimpleUser;
 import de.tuberlin.dima.xdbx.user.User;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
 //These tests should be parametrized similar to Retrieval Tests so that they can be applied to all Connectors
-public class PostgresQ3 {
+public class PostgresQ3_SF1 {
     private XDBConnectionDetails client1connection;
     private XDBConnectionDetails client2connection;
     private DBConnectionDetails innerDB1connection = new JDBCConnectionDetails("pg-1", 5432, "bdapro_user", "bdapro_password", "bdapro_database");

@@ -1,0 +1,114 @@
+version: "3.7"
+
+services:
+  postgres-1:
+    image: postgres-setup
+    container_name: pg-1
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d bdapro_database
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
+    ports:
+      - 8080:5432
+    networks:
+      - bdapro_network
+
+  postgres-2:
+    container_name: pg-2
+    image: postgres-setup
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d database
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
+    ports:
+      - 8081:5432
+    networks:
+      - bdapro_network
+
+  postgres-3:
+    container_name: pg-3
+    image: postgres-setup
+    environment:
+      POSTGRES_DB: bdapro_database
+      POSTGRES_USER: bdapro_user
+      POSTGRES_PASSWORD: bdapro_password
+    restart: always
+    healthcheck:
+      test: pg_isready -U bdapro_user -d database
+      interval: 10s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - test-data:/var/lib/postgresql/tpch:rw
+      - ./pg_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/pg_create_tpch_sf1.sql:rw
+    ports:
+      - 8082:5432
+    networks:
+      - bdapro_network
+
+  maria-db-1:
+    container_name: mdb-1
+    #image: mariadb:10.6
+    image: mariadb-setup
+    restart: always
+    environment:
+      MARIADB_DATABASE: bdapro_database
+      MARIADB_USER: bdapro_user
+      MARIADB_PASSWORD: bdapro_password
+      MARIADB_ROOT_PASSWORD: secret
+    volumes:
+      - test-data:/docker-entrypoint-initdb.d/tpch:rw
+      - ./mdb_create_tpch_sf1.sql:/docker-entrypoint-initdb.d/mdb_create_tpch_sf1.sql:rw
+    ports:
+      - 8083:3306
+    networks:
+      - bdapro_network
+
+volumes:
+  test-data:
+    external: true
+
+networks:
+  bdapro_network:
+    driver: bridge
+
+
+
+
+
+
+
+
+
+
+
+
+#volumes:
+#  volume-csv:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./COVID-19_Hospital_Capacity.csv
+#  volume-sql:
+#    driver_opts:
+#      type: local
+#      o: bind
+#      device: ./Postgres_COVID-19_Hospital_Capacity.sql
