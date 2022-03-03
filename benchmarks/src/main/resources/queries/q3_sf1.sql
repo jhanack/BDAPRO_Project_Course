@@ -1,3 +1,11 @@
+/*
+--------------------------------------------------
+| pg-1   | lineitem, orders                   |
+| mdb-1  | customer, nation, region, supplier |
+| pg-2   | part, partsupp                     |
+--------------------------------------------------
+ */
+
 select l.l_orderkey,
     sum( l.l_extendedprice * (1 - l.l_discount )) as revenue,
     o.o_orderdate,
