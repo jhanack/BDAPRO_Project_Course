@@ -1,3 +1,6 @@
+GRANT ALL PRIVILEGES ON *.* TO 'bdapro_user'@'%';
+FLUSH PRIVILEGES;
+
 CREATE TABLE sf1_supplier
 (
     s_suppkey   INTEGER,
@@ -92,22 +95,12 @@ CREATE TABLE sf1_region
 );
 
 USE bdapro_database;
-LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/COVID-19_Hospital_Capacity.csv' into TABLE bdapro_schema COLUMNS TERMINATED BY ',' IGNORE 1 LINES;
 
-LOAD DATA LOCAL INFILE '/data/sf1/customer.tbl' into table mdb_sf1_customer FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/orders.tbl' into table mdb_sf1_orders FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/lineitem.tbl' into table mdb_sf1_lineitem FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/nation.tbl' into table mdb_sf1_nation FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/partsupp.tbl' into table mdb_sf1_partsupp FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/part.tbl' into table mdb_sf1_part FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/region.tbl' into table mdb_sf1_region FIELDS TERMINATED BY '|';
-LOAD DATA LOCAL INFILE '/data/sf1/supplier.tbl' into table mdb_sf1_supplier FIELDS TERMINATED BY '|';
-
-\COPY sf1_lineitem FROM /var/lib/postgresql/tpch/sf1/lineitem.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_supplier FROM /var/lib/postgresql/tpch/sf1/supplier.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_region FROM /var/lib/postgresql/tpch/sf1/region.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_nation FROM /var/lib/postgresql/tpch/sf1/nation.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_orders FROM /var/lib/postgresql/tpch/sf1/orders.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_customer FROM /var/lib/postgresql/tpch/sf1/customer.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_partsupp FROM /var/lib/postgresql/tpch/sf1/partsupp.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
-\COPY sf1_part FROM /var/lib/postgresql/tpch/sf1/part.tbl with CSV DELIMITER '|' QUOTE '"' ESCAPE '\';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/customer.tbl' into table sf1_customer FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/orders.tbl' into table sf1_orders FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/lineitem.tbl' into table sf1_lineitem FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/nation.tbl' into table sf1_nation FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/partsupp.tbl' into table sf1_partsupp FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/part.tbl' into table sf1_part FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/region.tbl' into table sf1_region FIELDS TERMINATED BY '|';
+LOAD DATA LOCAL INFILE '/docker-entrypoint-initdb.d/tpch/sf1/supplier.tbl' into table sf1_supplier FIELDS TERMINATED BY '|';

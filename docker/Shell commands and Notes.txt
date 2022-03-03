@@ -7,6 +7,11 @@ psql -U bdapro_user bdapro_database
 \d sf1_part
 SELECT * FROM sf1_customer;
 
+MariaDB:
+mysql -u bdapro_user -pbdapro_password bdapro_database
+SHOW DATABASES;
+SHOW TABLES;
+SELECT * FROM sf1_customer;
 
 Exasol:
 docker port exa-1
@@ -27,11 +32,7 @@ exaplus -c n11:8888 -u sys -P exasol -jdbcparam validateservercertificate=0
     ExposedPorts = 8563:8574, 2580:2591
 
 
-MariaDB:
-mysql -u bdapro_user -pbdapro_password bdapro_database
-# -h 166.78.144.191
-SHOW TABLES;
-SELECT * FROM bdapro_schema;
+
 
 
 
@@ -40,4 +41,5 @@ Notes
 HOSPITAL, DATE, BED_TYPE, STATUS, COUNT
 Hospital, Date, Bed_Type, Status, Count
 system mysql -u root -psecret
-
+# -h 166.78.144.191
+SELECT User FROM mysql.user;
