@@ -25,7 +25,7 @@ object PG_Q3_SF10 {
     var properties: Properties = null
 
     // CHANGE TABLE DISTRIBUTION HERE
-    val url = getClass.getResource("/td_for_q3.properties")
+    val url = getClass.getResource("/td_for_q3_sf10.properties")
     if (url != null) {
       val source = Source.fromURL(url)
 

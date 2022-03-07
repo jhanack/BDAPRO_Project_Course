@@ -4,24 +4,28 @@ package de.tuberlin.dima.xdbx.tests;
 import de.tuberlin.dima.xdbx.client.Client;
 import de.tuberlin.dima.xdbx.client.ClientFactory;
 import de.tuberlin.dima.xdbx.client.SimpleClientFactory;
-import de.tuberlin.dima.xdbx.connector.*;
+import de.tuberlin.dima.xdbx.connector.DBConnectionDetails;
+import de.tuberlin.dima.xdbx.connector.DBType;
+import de.tuberlin.dima.xdbx.connector.DefaultDBTypes;
+import de.tuberlin.dima.xdbx.connector.JDBCConnectionDetails;
 import de.tuberlin.dima.xdbx.connector.postgres.PostgresInstance;
 import de.tuberlin.dima.xdbx.node.JDBCConnectionDetailFromGRPCFactory;
 import de.tuberlin.dima.xdbx.node.SimpleXDBConnection;
 import de.tuberlin.dima.xdbx.node.XDBConnectionDetails;
 import de.tuberlin.dima.xdbx.user.SimpleUser;
 import de.tuberlin.dima.xdbx.user.User;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-
 //These tests should be parametrized similar to Retrieval Tests so that they can be applied to all Connectors
-public class PostgresQ3_SF1 {
+public class PostgresQ3_SF10 {
     private XDBConnectionDetails client1connection;
     private XDBConnectionDetails client2connection;
     private DBConnectionDetails innerDB1connection = new JDBCConnectionDetails("pg-1", 5432, "bdapro_user", "bdapro_password", "bdapro_database");
@@ -110,8 +114,7 @@ public class PostgresQ3_SF1 {
 
         long start = System.nanoTime();
 
-
-        client2.createView("customer_localview", "SELECT c_custkey FROM sf1_customer WHERE c_mktsegment = 'BUILDING'", instance2.getDbConnectionDetails());
+        client2.createView("customer_localview", "SELECT c_custkey FROM sf10_customer WHERE c_mktsegment = 'BUILDING'", instance2.getDbConnectionDetails());
 
         client1.createForeignTable("customer_localview", "customer_localview",
                 client2connection,
@@ -119,7 +122,7 @@ public class PostgresQ3_SF1 {
                 innerDB2connection);
 
         client1.createView("tpchq3"
-                ,"SELECT l_orderkey, sum(l_extendedprice * (1 - l_discount)) AS revenue, o_orderdate, o_shippriority FROM \"1_customer_localview\", sf1_orders, sf1_lineitem WHERE c_custkey = o_custkey AND l_orderkey = o_orderkey AND o_orderdate < date '1995-03-15' AND l_shipdate > date '1995-03-15' GROUP BY l_orderkey, o_orderdate, o_shippriority ORDER BY revenue desc, o_orderdate LIMIT 10"
+                ,"SELECT l_orderkey, sum(l_extendedprice * (1 - l_discount)) AS revenue, o_orderdate, o_shippriority FROM \"1_customer_localview\", sf10_orders, sf10_lineitem WHERE c_custkey = o_custkey AND l_orderkey = o_orderkey AND o_orderdate < date '1995-03-15' AND l_shipdate > date '1995-03-15' GROUP BY l_orderkey, o_orderdate, o_shippriority ORDER BY revenue desc, o_orderdate LIMIT 10"
                 ,instance1.getDbConnectionDetails());
 
         long middle = System.nanoTime();
